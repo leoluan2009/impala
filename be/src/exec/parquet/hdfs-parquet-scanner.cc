@@ -2051,19 +2051,8 @@ Status HdfsParquetScanner::CreateColIdx2EqConjunctMap() {
       }
 
       if (missing_field) {
-        if (file_metadata_utils_.NeedDataInFile(slot_desc)) {
-          // If a column is added to the schema of an existing table, the schemas of the
-          // old parquet data files do not contain the new column: see IMPALA-11345. This
-          // is not an error, we simply disregard this column in Bloom filtering in this
-          // scanner.
-          unexpected_missing_fields.emplace(
-              PrintPath(*scan_node_->hdfs_table(), slot_desc->col_path()));
-        } else {
-          // If the data is not expected to be in the file, we disregard the conjuncts for
-          // the purposes of Bloom filtering.
-          expected_missing_fields.emplace(
-              PrintPath(*scan_node_->hdfs_table(), slot_desc->col_path()));
-        }
+        expected_missing_fields.emplace(
+            PrintPath(*scan_node_->hdfs_table(), slot_desc->col_path()));
         continue;
       }
       DCHECK(node != nullptr);
